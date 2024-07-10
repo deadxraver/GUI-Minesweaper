@@ -15,9 +15,9 @@ public class MainFrame extends JFrame {
 	private GameField gameField;
 	private CellButton[][] buttonField;
 
-	public MainFrame() {
+	public MainFrame(Size option) {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.gameField = new GameField(Size.SMALL);
+		this.gameField = new GameField(option);
 		setLayout(new GridBagLayout());
 		drawField();
 
@@ -51,6 +51,7 @@ public class MainFrame extends JFrame {
 					System.err.println(ex.getMessage());
 				}
 				gameField.removeZeros();
+				if (!gameField.checkCondition()) gameField.openAll();
 				refreshField();
 				super.mouseClicked(e);
 			}

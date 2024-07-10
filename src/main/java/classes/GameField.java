@@ -130,7 +130,7 @@ public class GameField {
         if (wrongInput) System.out.println("Try again!");
     }
 
-    private void openAll() {
+    public void openAll() {
         for (int i = 1; i <= height; i++) {
             for (int j = 1; j <= width; j++) {
                 field[i][j].setCondition(OPEN);

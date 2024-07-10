@@ -1,13 +1,10 @@
-import classes.Game;
-import guipart.MainFrame;
+import guipart.DifficultyFrame;
 
 public class Main {
 
     public static void main(String... Args) {
 
-        new MainFrame().setVisible(true);
-//        Game game = new Game();
-//        game.startConsole();
+        new DifficultyFrame().setVisible(true);
 
     }
 
