@@ -15,6 +15,7 @@ public class DifficultyFrame extends JFrame {
     public DifficultyFrame() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new GridBagLayout());
+        setTitle("Difficulty");
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -29,7 +30,7 @@ public class DifficultyFrame extends JFrame {
         processBoxAndButton();
 
         pack();
-        setBounds(0, 0, getWidth() + 50, getHeight() + 50);
+        setBounds(0, 0, getWidth() + 70, getHeight() + 60);
     }
 
     private void processBoxAndButton() {
@@ -39,7 +40,7 @@ public class DifficultyFrame extends JFrame {
 
         button.addActionListener(l -> {
             setVisible(false);
-            new MainFrame(option).setVisible(true);
+            new MainFrame(getX(), getY(), option).setVisible(true);
         });
     }
 }
