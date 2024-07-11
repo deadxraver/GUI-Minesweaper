@@ -78,6 +78,9 @@ public class MainFrame extends JFrame {
 				Cell cell = gameField.getField()[i + 1][j + 1];
 				buttonField[i][j].setText(cell.toString());
 				if (cell.getContainment() == Contains.MINE && cell.getCondition() == Condition.OPEN) buttonField[i][j].setText("X ");
+				if (buttonField[i][j].getText().trim().equals("X") || buttonField[i][j].getText().trim().equals("F")) buttonField[i][j].setBackground(Color.RED);
+				else if (buttonField[i][j].getText().trim().equals("?")) buttonField[i][j].setBackground(null);
+				else buttonField[i][j].setBackground(Color.GREEN);
 			}
 		}
 	}
