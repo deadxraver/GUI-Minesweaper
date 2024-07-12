@@ -17,6 +17,7 @@ public class MainFrame extends JFrame {
 
 	private final GameField gameField;
 	private CellButton[][] buttonField;
+	private MouseAdapter[][] mouseAdapters;
 
 	public MainFrame(int x, int y, Size option) {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -32,6 +33,7 @@ public class MainFrame extends JFrame {
 	private void drawField() {
 		GridBagConstraints gbc = new GridBagConstraints();
 		buttonField = new CellButton[gameField.getField().length - 2][gameField.getField()[0].length - 2];
+		mouseAdapters = new MouseAdapter[gameField.getField().length - 2][gameField.getField()[0].length - 2];
 		for (int gridY = 0; gridY < buttonField.length; gridY++) {
 			for (int gridX = 0; gridX < buttonField[0].length; gridX++) {
 				gbc.gridx = gridX;
@@ -45,7 +47,7 @@ public class MainFrame extends JFrame {
 
 	private CellButton processButton(int gridX, int gridY) {
 		CellButton button = new CellButton("?", gridX, gridY);
-		button.addMouseListener(new MouseAdapter() {
+		MouseAdapter mouseAdapter = new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				String inp = "" + (char)(button.gridX + 'A') + (button.gridY + 1) + (SwingUtilities.isRightMouseButton(e) ? "f" : "");
@@ -68,7 +70,9 @@ public class MainFrame extends JFrame {
 				refreshField();
 				super.mouseClicked(e);
 			}
-		});
+		};
+		mouseAdapters[gridY][gridX] = mouseAdapter;
+		button.addMouseListener(mouseAdapter);
 		return button;
 	}
 
@@ -86,6 +90,12 @@ public class MainFrame extends JFrame {
 	}
 
 	private void endGame(String text) {
+		for (int i = 0; i < buttonField.length; i++) {
+			for (int j = 0; j < buttonField[0].length; j++) {
+				buttonField[i][j].setEnabled(false);
+				buttonField[i][j].removeMouseListener(mouseAdapters[i][j]);
+			}
+		}
 		JFrame endFrame = new JFrame(text);
 		JLabel label = new JLabel(text);
 		JButton button = new JButton("OK");
