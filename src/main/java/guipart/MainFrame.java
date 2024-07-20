@@ -12,22 +12,50 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAmount;
 
 public class MainFrame extends JFrame {
 
 	private final GameField gameField;
 	private CellButton[][] buttonField;
 	private MouseAdapter[][] mouseAdapters;
+	private final Instant startTime = Instant.now();
+	private JLabel timeLabel;
+	private Thread r;
 
 	public MainFrame(int x, int y, Size option) {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Minesweeper");
 		this.gameField = new GameField(option);
 		setLayout(new GridBagLayout());
+		timeLabel = new JLabel("00:00:00");
 		drawField();
+
 
 		pack();
 		setBounds(x, y, getWidth() + 60, getHeight() + 60);
+	}
+
+	private void updateTime() {
+		while (true) {
+			timeLabel.setText(getStringTime());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
+				return;
+            }
+        }
+	}
+
+	private String getStringTime() {
+		Duration currentTime = Duration.between(startTime, Instant.now());
+		String hours = (currentTime.toHours() % 24 < 10) ? ("0" + currentTime.toHours() % 24) : ("" + currentTime.toHours() % 24);
+		String minutes = (currentTime.toMinutes() % 60 < 10) ? ("0" + currentTime.toMinutes() % 60) : ("" + currentTime.toMinutes() % 60);
+		String seconds = (currentTime.toSeconds() % 60 < 10) ? ("0" + currentTime.toSeconds() % 60) : ("" + currentTime.toSeconds() % 60);
+		return hours + ":" + minutes + ":" + seconds;
 	}
 
 	private void drawField() {
@@ -43,6 +71,10 @@ public class MainFrame extends JFrame {
 				add(button, gbc);
 			}
 		}
+		r = new Thread(this::updateTime);
+		r.start();
+		gbc.gridy++;
+		add(timeLabel, gbc);
 	}
 
 	private CellButton processButton(int gridX, int gridY) {
@@ -90,6 +122,7 @@ public class MainFrame extends JFrame {
 	}
 
 	private void endGame(String text) {
+		r.interrupt();
 		for (int i = 0; i < buttonField.length; i++) {
 			for (int j = 0; j < buttonField[0].length; j++) {
 				buttonField[i][j].setEnabled(false);
