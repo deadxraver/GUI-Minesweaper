@@ -31,6 +31,7 @@ public class DifficultyFrame extends JFrame {
 
         pack();
         setBounds(0, 0, getWidth() + 70, getHeight() + 60);
+        setResizable(false);
     }
 
     private void processBoxAndButton() {

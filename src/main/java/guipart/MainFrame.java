@@ -33,10 +33,9 @@ public class MainFrame extends JFrame {
 		setLayout(new GridBagLayout());
 		timeLabel = new JLabel("00:00:00");
 		drawField();
-
-
 		pack();
 		setBounds(x, y, getWidth() + 60, getHeight() + 60);
+		setResizable(false);
 	}
 
 	private void updateTime() {
