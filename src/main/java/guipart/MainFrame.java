@@ -14,8 +14,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.temporal.TemporalAmount;
 
 public class MainFrame extends JFrame {
 
@@ -23,8 +21,9 @@ public class MainFrame extends JFrame {
 	private CellButton[][] buttonField;
 	private MouseAdapter[][] mouseAdapters;
 	private final Instant startTime = Instant.now();
-	private JLabel timeLabel;
+	private final JLabel timeLabel;
 	private Thread r;
+	private boolean firstMove = true;
 
 	public MainFrame(int x, int y, Size option) {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -82,6 +81,11 @@ public class MainFrame extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				String inp = "" + (char)(button.gridX + 'A') + (button.gridY + 1) + (SwingUtilities.isRightMouseButton(e) ? "f" : "");
+				if (firstMove) {
+					gameField.placeMines(gridX + 1, gridY + 1);
+					inp = inp.replace("f", "");
+					firstMove = false;
+				}
 				try {
 					gameField.move(WorkWithInput.convert(inp));
 				} catch (InputException ex) {

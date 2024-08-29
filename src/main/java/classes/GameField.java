@@ -3,15 +3,24 @@ package classes;
 import enums.Condition;
 import enums.Contains;
 import enums.Size;
-import exceptions.InputException;
 
 import static enums.Condition.*;
 import static enums.Contains.MINE;
-import static enums.Contains.VOID;
 
 public class GameField {
+
+    private boolean minesPlaced = false;
+
+    private final int[] circle1 = {-1, -1, -1,  0, 0,  1, 1, 1};
+    private final int[] circle2 = {-1,  0,  1, -1, 1, -1, 0, 1};
+
+    private final int width;
+    private final int height;
+    private final int numberOfMines;
+
+    private final Cell[][] field;
+
     public GameField(Size s) {
-        size = s;
         if (s == Size.SMALL) {
             width = 6;
             height = 13;
@@ -29,13 +38,16 @@ public class GameField {
         }
 
         field = new Cell[height + 2][width + 2];
-        gameOngoing = true;
-        fillWith(0, CLOSED, VOID);
-        cellsLeft = height * width - numberOfMines;
+        fillWithZeros();
+    }
+
+    public void placeMines(int x, int y) {
+        if (minesPlaced) return;
+        minesPlaced = true;
         for (int i = 0; i < numberOfMines; i++) {
             int lenPos = (int)(Math.random() * height + 1);
             int widPos = (int)(Math.random() * width + 1);
-            if (field[lenPos][widPos].getContainment() == MINE) i--;
+            if (field[lenPos][widPos].getContainment() == MINE || (lenPos == y && widPos == x)) i--;
             else {
                 field[lenPos][widPos].setContainment(MINE);
                 for (int j = 0; j <= 7; j++) {
@@ -45,45 +57,14 @@ public class GameField {
         }
     }
 
-    public int getCellsLeft() {
-        return cellsLeft;
-    }
-
-    private final char[] alphabet = "-abcdefghijklm".toUpperCase().toCharArray();
-    private final int[] circle1 = {-1, -1, -1,  0, 0,  1, 1, 1};
-    private final int[] circle2 = {-1,  0,  1, -1, 1, -1, 0, 1};
-
-    private final int width;
-    private final int height;
-    private final int numberOfMines;
-
-    public Size getSize() {
-        return size;
-    }
-
-    private final Size size;
-
-    private Cell[][] field;
-
-    private boolean gameOngoing;
-    public int getWidth() {
-        return width;
-    }
-
     public Cell[][] getField() {
         return field;
     }
 
-    public int getHeight() {
-        return height;
-    }
-
-    private int cellsLeft;
-
-    private void fillWith(int numberOfMinesAround, Condition condition, Contains containment) {
+    private void fillWithZeros() {
         for (int i = 0; i < height + 2; i++) {
             for (int j = 0; j < width + 2; j++) {
-                field[i][j] = new Cell(numberOfMinesAround, condition, containment);
+                field[i][j] = new Cell(0, Condition.CLOSED, Contains.VOID);
             }
         }
     }
@@ -100,34 +81,8 @@ public class GameField {
                 if (field[i][j].getCondition() == CLOSED && field[i][j].getContainment() != MINE) cnt++;
             }
         }
-        cellsLeft = cnt;
         if (cnt == 0) return false;
-        return (numberOfMines > 0 && gameOngoing && cellsLeft != 0);
-    }
-
-    public void buildField(boolean gameIsOver, boolean wrongInput) {
-
-        System.out.print("\033[H\033[2J"); // UNIX
-        System.out.flush();
-
-        if (gameIsOver) {
-            openAll();
-        }
-
-        for (int i = 0; i <= height; i++) {
-            for (int j = 0; j <= width; j++) {
-                if (i != 0 && j != 0) System.out.print(field[i][j]);
-                else if (i != 0) System.out.print(i + (i < 10 ? "  " : " "));
-                else if (j == 0) {
-                    System.out.print("   ");
-                }
-                else {
-                    System.out.print(alphabet[j] + " ");
-                }
-            }
-            System.out.println();
-        }
-        if (wrongInput) System.out.println("Try again!");
+        return numberOfMines > 0;
     }
 
     public void openAll() {
@@ -167,13 +122,7 @@ public class GameField {
             field[lenPos][widPos].setCondition(FLAG);
             return;
         }
-        if (field[lenPos][widPos].getCondition() == CLOSED) cellsLeft++;
-        else cellsLeft--;
         field[lenPos][widPos].setCondition(OPEN);
-    }
-
-    public void checkIfOutOfBounds(int[] moves) throws InputException {
-        if (moves[0] > height || moves[0] < 1 || moves[1] > width || moves[1] < 1) throw new InputException();
     }
 
 }
